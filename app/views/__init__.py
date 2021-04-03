@@ -28,7 +28,7 @@ def index():
             except:
                 __clear_session()
                 return render_template('index.html', form=form)
-    abort(404)
+    return render_template('index.html', form=form)
 
 
 @bp.route('/game/<string:code>')
@@ -110,5 +110,5 @@ def __clear_session():
 
 
 class JoinForm(Form):
-    name = StringField('Name', [validators.Length(min=3, max=25)])
-    code = StringField('Code', [validators.Length(min=10, max=10)])
+    name = StringField('Имя', [validators.Length(min=3, max=25)])
+    code = StringField('Код Игры', [validators.Length(min=10, max=10)])

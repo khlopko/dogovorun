@@ -1,40 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    {% if game.started %}
+{% block navitems %}
 
-        {% if is_spectator %}
-            Выбранные номера: {{ game.seq }}
-            <br>
-            Ожидаемая последовательность: {{ game.exp_seq }}
-            <br><br><hr><br>
-            <a href="{{ url_for('game.restart', code=game.code) }}">Restart</a>
-            <a href="{{ url_for('game.finish', code=game.code) }}">Finish</a>
-        {% endif %}
+{% if is_spectator %}
 
-        {% if is_player %}
-            Мы уже играем, да?
-            <br><br>
-            У меня такие цифры:
-            {% for number in player.all_numbers %}
-                <a href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{ number }}</a>
-            {% endfor %}
-            <br>
-            Из них я использовал: {{ player.used_numbers }}
-        {% endif %}
-
+    {% if not game.started %}
+        <li class="nav-item">
+            <a class="nav-link active p-4" href="{{ url_for('game.start', code=game.code) }}">Начать</a>
+        </li>
     {% else %}
-        {% if is_spectator %}
-            <a href="{{ url_for('game.start', code=game.code) }}">Start</a>
-        {% else %}
-            Ща начнется...
-        {% endif %}
+        <li class="nav-item">
+            <a class="nav-link text-secondary active p-4" href="{{ url_for('game.restart', code=game.code) }}">Перезапустить</a>
+        </li>
     {% endif %}
 
-</body>
-</html>
+    <li class="nav-item">
+        <a class="nav-link text-danger active p-4" href="{{ url_for('game.finish', code=game.code) }}">Завершить</a>
+    </li>
+
+{% endif %}
+
+{% endblock navitems %}
+
+{% block content %}
+
+{% if game.started %}
+
+    {% if is_spectator %}
+
+        Выбранные номера: {{ game.seq }}
+        <br>
+        Ожидаемая последовательность: {{ game.exp_seq }}
+        <br><br>
+        <hr><br>
+
+    {% endif %}
+
+    {% if is_player %}
+
+        Мы уже играем, да?
+        <br><br>
+        У меня такие цифры:
+        {% for number in player.all_numbers %}
+            <a href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{ number }}</a>
+        {% endfor %}
+        <br>
+        Из них я использовал: {{ player.used_numbers }}
+
+    {% endif %}
+
+{% else %}
+
+    {% if is_player %}
+
+        Ща начнется...
+
+    {% endif %}
+
+{% endif %}
+
+{% endblock content %}

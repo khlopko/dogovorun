@@ -1,21 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <a href="{{ url_for('game.create') }}">
-        Create
-    </a>
+{% extends 'base.html' %}
 
-    {% from '_formhelpers.html' import render_field %}
-    <form method=post>
-        <dl>
-            {{ render_field(form.name) }}
-            {{ render_field(form.code) }}
-        </dl>
-        <p><input type=submit value=Register>
-    </form>
-</body>
-</html>
+{% block navitems %}
+
+<li class="nav-item">
+    <a class="nav-link active p-4" href="{{ url_for('game.create') }}">Новая игра</a>
+</li>
+
+{% endblock navitems %}
+
+{% block content %}
+
+<div class="col">
+    <div class="card m-5">
+        <div class="card-body">
+            <div class="d-grid gap-2 col-6 mx-auto">
+                {% from '_formhelpers.html' import render_field %}
+                <form method=post>
+                    <dl>
+                        {{ render_field(form.name) }}
+                        {{ render_field(form.code) }}
+                    </dl>
+                    <p><input class="btn btn-primary" type=submit value="Присоединиться">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
