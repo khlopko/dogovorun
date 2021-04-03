@@ -1,0 +1,3 @@
+
+class GameNotExist(Exception):
+    pass

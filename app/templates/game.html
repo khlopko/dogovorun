@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    {% if game.started %}
+
+        {% if is_spectator %}
+            Выбранные номера: {{ game.seq }}
+            <br>
+            Ожидаемая последовательность: {{ game.exp_seq }}
+            <br><br><hr><br>
+            <a href="{{ url_for('game.restart', code=game.code) }}">Restart</a>
+            <a href="{{ url_for('game.finish', code=game.code) }}">Finish</a>
+        {% endif %}
+
+        {% if is_player %}
+            Мы уже играем, да?
+            <br><br>
+            У меня такие цифры:
+            {% for number in player.all_numbers %}
+                <a href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{ number }}</a>
+            {% endfor %}
+            <br>
+            Из них я использовал: {{ player.used_numbers }}
+        {% endif %}
+
+    {% else %}
+        {% if is_spectator %}
+            <a href="{{ url_for('game.start', code=game.code) }}">Start</a>
+        {% else %}
+            Ща начнется...
+        {% endif %}
+    {% endif %}
+
+</body>
+</html>
