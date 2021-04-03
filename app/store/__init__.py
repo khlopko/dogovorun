@@ -21,11 +21,12 @@ class FileGameGateway(GameGateway):
         return game
 
     def start(self, game: Game):
+        game.seq = []
         numbers = random.sample(range(1, 100), len(game.players) * 3)
         game.exp_seq = sorted(numbers)
         chunks = self._chunks(numbers, 3)
         for p, c in zip(game.players, chunks):
-            p.all_numbers = c
+            p.all_numbers = sorted(c)
         game.started = True
         self.update(game=game)
 

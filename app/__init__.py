@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 from flask import Flask
 
@@ -9,7 +10,8 @@ def create_app(config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        GAMES_PATH=os.path.join(app.instance_path, 'games')
+        GAMES_PATH=os.path.join(app.instance_path, 'games'),
+        PERMANENT_SESSION_LIFETIME=timedelta(minutes=60*24)
     )
 
     if config is None:

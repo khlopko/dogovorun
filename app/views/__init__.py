@@ -10,6 +10,7 @@ bp = Blueprint('game', __name__, url_prefix='/')
 
 @bp.route('/', methods=['GET', 'POST'])
 def index():
+    session.permanent = True
     form = JoinForm(request.form)
     enter = Prepare(gateway=FileGameGateway(dir=current_app.instance_path))
     if request.method == 'POST' and form.validate():
@@ -37,25 +38,26 @@ def game(code: str):
     is_player = 'player_id' in session
     if (is_player or is_spectator) and session['code'] == code:
         enter = Prepare(gateway=FileGameGateway(dir=current_app.instance_path))
-        try:
-            game = enter.current(code=code)
-            player = None
-            if is_player:
-                player = next(i for i in game.players if i.id == session['player_id'])
-            return render_template(
-                'game.html',
-                game=game,
-                player=player,
-                is_spectator=is_spectator,
-                is_player=is_player)
-        except:
-            __clear_session()
-            return redirect(url_for('game.index'))
+        game = enter.current(code=code)
+        player = None
+        if is_player:
+            player = next(i for i in game.players if i.id == session['player_id'])
+            players_list = None
+        if is_spectator:
+            players_list = ', '.join(list(map(lambda p: p.name, game.players)))
+        return render_template(
+            'game.html',
+            game=game,
+            player=player,
+            players_list=players_list,
+            is_spectator=is_spectator,
+            is_player=is_player)
     abort(404)
 
 
 @bp.route('/create', methods=['GET'])
 def create():
+    session.permanent = True
     enter = Prepare(gateway=FileGameGateway(dir=current_app.instance_path))
     game = enter.create()
     session['spectator'] = True

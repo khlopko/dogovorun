@@ -4,19 +4,19 @@
 
 {% if is_spectator %}
 
-    {% if not game.started %}
-        <li class="nav-item">
-            <a class="nav-link active p-4" href="{{ url_for('game.start', code=game.code) }}">Начать</a>
-        </li>
-    {% else %}
-        <li class="nav-item">
-            <a class="nav-link text-secondary active p-4" href="{{ url_for('game.restart', code=game.code) }}">Перезапустить</a>
-        </li>
-    {% endif %}
+{% if not game.started %}
+<li class="nav-item">
+    <a class="nav-link active p-4" href="{{ url_for('game.start', code=game.code) }}">Начать</a>
+</li>
+{% else %}
+<li class="nav-item">
+    <a class="nav-link text-secondary active p-4" href="{{ url_for('game.restart', code=game.code) }}">Перезапустить</a>
+</li>
+{% endif %}
 
-    <li class="nav-item">
-        <a class="nav-link text-danger active p-4" href="{{ url_for('game.finish', code=game.code) }}">Завершить</a>
-    </li>
+<li class="nav-item">
+    <a class="nav-link text-danger active p-4" href="{{ url_for('game.finish', code=game.code) }}">Завершить</a>
+</li>
 
 {% endif %}
 
@@ -26,36 +26,88 @@
 
 {% if game.started %}
 
-    {% if is_spectator %}
+<div class="card m-2">
+    <div class="card-body">
+        <h5 class="card-title">
+            Собранная последовательность
+        </h5>
+        <p class="card-text">
+            {% for number in game.seq %}
+                {{ number }},
+            {% endfor %}
+        </p>
+    </div>
+</div>
 
-        Выбранные номера: {{ game.seq }}
-        <br>
-        Ожидаемая последовательность: {{ game.exp_seq }}
-        <br><br>
-        <hr><br>
+{% if is_spectator %}
 
-    {% endif %}
+<div class="card m-2">
+    <div class="card-body">
+        <h5 class="card-title">
+            Ожидаемая последовательность
+        </h5>
+        <p class="card-text">
+            {% for number in game.exp_seq %}
+                {{ number }},
+            {% endfor %}
+        </p>
+    </div>
+</div>
 
-    {% if is_player %}
+{% endif %}
 
-        Мы уже играем, да?
-        <br><br>
-        У меня такие цифры:
-        {% for number in player.all_numbers %}
-            <a href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{ number }}</a>
-        {% endfor %}
-        <br>
-        Из них я использовал: {{ player.used_numbers }}
+{% if is_player %}
 
-    {% endif %}
+<div class="card m-2">
+    <div class="card-body">
+        <h5 class="card-title">
+            Ты - {{ player.name }}
+        </h5>
+        <p class="card-text">
+            Тебе достались следующие числа:
+        </p>
+        <p>
+            {% for number in player.all_numbers %}
+            <a class="btn btn-primary" href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{ number }}</a>
+            {% endfor %}
+        </p>
+        <p class="card-text">
+            Из них ты уже использовал:
+            {% for number in player.used_numbers %}
+            <a class="btn btn-secondary inactive" href="#">{{ number }}</a>
+            {% endfor %}
+        </p>
+    </div>
+</div>
+
+{% endif %}
 
 {% else %}
 
-    {% if is_player %}
+<div class="card m-2">
+    <div class="card-body">
+        <h5 class="card-title">
+            Пригласить других
+        </h5>
+        <p class="card-subtitle">
+            Отправь код другим, что бы они могли присоединиться
+        </p>
+        <p class="card-text h2">{{ game.code }}</p>
+    </div>
+</div>
 
-        Ща начнется...
+{% endif %}
 
-    {% endif %}
+{% if is_spectator %}
+
+<div class="card m-2">
+    <div class="card-body">
+        <h5 class="card-title">
+            Текущие участники
+        </h5>
+        <p class="card-text">{{ players_list }}</p>
+    </div>
+</div>
 
 {% endif %}
 
