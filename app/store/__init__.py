@@ -27,6 +27,7 @@ class FileGameGateway(GameGateway):
         chunks = self._chunks(numbers, 3)
         for p, c in zip(game.players, chunks):
             p.all_numbers = sorted(c)
+            p.used_numbers = []
         game.started = True
         self.update(game=game)
 
