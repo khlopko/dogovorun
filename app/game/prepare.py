@@ -30,8 +30,6 @@ class Prepare:
 
     def join(self, player_name: str, code: str) -> (Game, Player):
         game = self.gateway.existing(code=code)
-        if next(p for p in game.players if p.name == player_name):
-            raise Prepare.JoinUnsuccessful()
         player = Player(id=uuid.uuid4(), name=player_name, all_numbers=[], used_numbers=[])
         if game.started:
             raise Prepare.JoinUnsuccessful()

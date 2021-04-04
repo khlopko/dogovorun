@@ -17,9 +17,9 @@ def index():
     form = JoinForm(request.form)
     if request.method == 'POST' and form.validate():
         try:
-            __join(form=form)
+            return __join(form=form)
         except Prepare.JoinUnsuccessful:
-            abort(400)
+            return abort(400)
     if request.method == 'GET':
         game = __restore_existing()
         if game:
@@ -30,11 +30,12 @@ def index():
 
 
 def __join(form: JoinForm):
+    if 'code' in session or 'player_id' in session or 'spectator' in session:
+        return redirect(url_for('game.index'))
     prepare = __make_prepare()
     game, player = prepare.join(player_name=form.name.data, code=form.code.data)
     session['code'] = game.code
     session['player_id'] = player.id
-    flash('Game Joined! Wait for the beginning!')
     return redirect(url_for('game.game', code=game.code))
 
 
@@ -54,32 +55,24 @@ def __restore_existing() -> Optional[Game]:
 
 @bp.route('/game/<string:code>')
 def game(code: str):
-    checks = __has_valid_game_info(code=code) or None
-    if not checks:
-        return __reset_to_index()
-    is_player, is_spectator = checks[0], checks[1]
-    prepare = __make_prepare()
-    try:
-        game = prepare.current(code=code)
-        return __render_game(game=game, is_player=is_player, is_spectator=is_spectator)
-    except Exception:
-        return __reset_to_index()
-
-
-def __has_valid_game_info(code: str) -> Optional[Tuple[bool, bool]]:
     is_player = 'player_id' in session
     is_spectator = 'spectator' in session
     has_code = 'code' in session
     if (is_player or is_spectator) and has_code and session['code'] == code:
-        return is_player, is_spectator
-    return None
+        prepare = __make_prepare()
+        try:
+            game = prepare.current(code=code)
+            return __render_game(game=game, is_player=is_player, is_spectator=is_spectator)
+        except Exception:
+            return __reset_to_index()
+    return __reset_to_index()
 
 
 def __render_game(game: Game, is_player: bool, is_spectator: bool):
     player = None
     if is_player:
         player = next(i for i in game.players if i.id == session['player_id'])
-        players_list = None
+    players_list = None
     if is_spectator:
         players_list = ', '.join(list(map(lambda p: p.name, game.players)))
     return render_template(
@@ -108,7 +101,7 @@ def start(code: str):
         game = gateway.existing(code=code)
         gateway.start(game=game)
         return redirect(url_for('game.game', code=code))
-    abort(403)
+    return abort(403)
 
 
 @bp.route('/game/<string:code>/add/<int:number>')
@@ -128,6 +121,7 @@ def restart(code: str):
         game = gateway.existing(code=code)
         gateway.restart(game=game)
         return redirect(url_for('game.game', code=code))
+    return abort(403)
 
 
 @bp.route('/game/<string:code>/finish')
@@ -137,7 +131,7 @@ def finish(code: str):
         game = gateway.existing(code=code)
         gateway.finish(game=game)
         return __reset_to_index()
-    abort(404)
+    abort(403)
 
 
 def __reset_to_index():
