@@ -6,16 +6,20 @@
 
 {% if not game.started %}
 <li class="nav-item">
-    <a class="nav-link active p-4" href="{{ url_for('game.start', code=game.code) }}">Начать</a>
+    <a class="nav-link active p-4 emit" href="{{ url_for('game.start', code=game.code) }}">
+        Начать
+    </a>
 </li>
 {% else %}
 <li class="nav-item">
-    <a class="nav-link text-secondary active p-4" href="{{ url_for('game.restart', code=game.code) }}">Перезапустить</a>
+    <a class="nav-link text-secondary active p-4 emit" href="{{ url_for('game.restart', code=game.code) }}">
+        Перезапустить
+    </a>
 </li>
 {% endif %}
 
 <li class="nav-item">
-    <a class="nav-link text-danger active p-4" href="{{ url_for('game.finish', code=game.code) }}">Завершить</a>
+    <a class="nav-link text-danger active p-4 emit" href="{{ url_for('game.finish', code=game.code) }}">Завершить</a>
 </li>
 
 {% endif %}
@@ -33,7 +37,7 @@
         </h5>
         <p class="card-text">
             {% for number in game.seq %}
-                {{ number }},
+            {{ number }},
             {% endfor %}
         </p>
     </div>
@@ -48,7 +52,7 @@
         </h5>
         <p class="card-text">
             {% for number in game.exp_seq %}
-                {{ number }},
+            {{ number }},
             {% endfor %}
         </p>
     </div>
@@ -68,7 +72,7 @@
         </p>
         <p>
             {% for number in player.all_numbers %}
-            <a class="btn btn-primary" href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{ number }}</a>
+            <a class="btn btn-primary emit" href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{ number }}</a>
             {% endfor %}
         </p>
         <p class="card-text">
@@ -110,5 +114,9 @@
 </div>
 
 {% endif %}
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/reconnecting-websocket.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/application.js') }}"></script>
 
 {% endblock content %}
