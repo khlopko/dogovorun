@@ -32,11 +32,26 @@ class RealtimeService:
             self.clients.remove(client)
 
     def run(self):
-        """Listens for new messages in Redis, and sends them to clients."""
         for data in self.__iter_data():
             for client in self.clients:
                 gevent.spawn(self.send, client, data)
 
     def start(self):
-        """Maintains Redis subscription in the background."""
         gevent.spawn(self.run)
+
+
+def register_routes(app, sockets, redis, channel, service):
+    @sockets.route('/submit')
+    def inbox(ws):
+        while not ws.closed:
+            gevent.sleep(0.01)
+            message = ws.receive()
+            if message:
+                app.logger.info(u'Inserting message: {}'.format(message))
+                redis.publish(channel, message)
+
+    @sockets.route('/receive')
+    def outbox(ws):
+        service.register(ws)
+        while not ws.closed:
+            gevent.sleep(0.01)
