@@ -1,11 +1,11 @@
 import React from 'react';
 import {Route, Routes} from "react-router-dom";
 import Home from './Home';
-import NewGame, {NewGameParameters} from "./NewGame";
 import Base from "./Base";
 
 import { ConfigProvider } from 'antd';
 import { green } from "@ant-design/colors";
+import Game from "./Game";
 
 ConfigProvider.config({
   theme: {
@@ -18,7 +18,7 @@ function App() {
         <Base>
             <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/new' element={<NewGame />} />
+                <Route path='/game/:id' element={<Game />} />
             </Routes>
         </Base>
     );

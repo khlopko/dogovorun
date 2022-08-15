@@ -2,9 +2,10 @@ import {Content, Header} from "antd/lib/layout/layout";
 import {Layout, Menu} from "antd";
 import {Link} from "react-router-dom";
 import React from "react";
-import withRouter from "./withRouter";
-import {green, grey} from "@ant-design/colors";
+import withRouter, {RouterProps} from "./withRouter";
+import {green} from "@ant-design/colors";
 import {Footer} from "antd/es/layout/layout";
+import {create} from "./api";
 
 function Base(props: any) {
     return (
@@ -15,7 +16,7 @@ function Base(props: any) {
                         <Link to="/">Бонд</Link>
                     </Menu.Item>
                     <Menu.Item key="/new">
-                        <Link to="/new">Новая игра</Link>
+                        <a onClick={() => newGame(props)}>Новая игра</a>
                     </Menu.Item>
                 </Menu>
             </Header>
@@ -29,6 +30,16 @@ function Base(props: any) {
             </Footer>
         </Layout>
     );
+}
+
+function newGame(props: RouterProps) {
+    create().then(result => {
+        if (result.ok) {
+            props.router?.navigate(`/game/${result.value}`)
+        } else {
+            props.router?.navigate(`/`)
+        }
+    })
 }
 
 export default withRouter(Base);

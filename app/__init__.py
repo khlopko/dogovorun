@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import redis
 from flask import Flask
+from flask_cors import CORS
 from flask_sockets import Sockets
 
 from .realtime_service import RealtimeService, register_routes
@@ -17,6 +18,7 @@ rs = RealtimeService(redis=redis, channel=REDIS_CHANNEL)
 
 def create_app(config=None):
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
     app.config.from_mapping(
         SECRET_KEY='dev',
         GAMES_PATH=os.path.join(app.instance_path, 'games'),
@@ -33,10 +35,10 @@ def create_app(config=None):
     except OSError:
         pass
 
-    from .views.game import bp
-    app.register_blueprint(blueprint=bp)
+    from .views.api import api
+    app.register_blueprint(blueprint=api)
 
-    from app.views.errors import register_error_handlers
+    from app.views.api import register_error_handlers
     register_error_handlers(app=app)
 
     sockets.init_app(app=app)

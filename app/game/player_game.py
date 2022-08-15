@@ -11,11 +11,11 @@ class PlayerGame:
         self.gateway = gateway
 
     def add_number(self, number: int):
-        player_has_that_number = self.player.all_numbers.__contains__(number)
-        game_has_that_number = self.game.exp_seq.__contains__(number)
+        player_has_that_number = number in self.player.all_numbers
+        game_has_that_number = number in self.game.exp_seq
         if not (self.game.started or player_has_that_number or game_has_that_number):
             return
-        if self.player.used_numbers.__contains__(number) or len(self.player.used_numbers) == 3:
+        if number in self.player.used_numbers or len(self.player.used_numbers) == 3:
             return
         self.game.seq.append(number)
         self.player.used_numbers.append(number)

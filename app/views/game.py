@@ -1,6 +1,6 @@
-from typing import Optional, Tuple
+from typing import Optional
 
-from flask import Blueprint, render_template, abort, redirect, url_for, flash, request, current_app, session
+from flask import Blueprint, render_template, abort, redirect, url_for, request, current_app, session
 
 from app import FileGameGateway
 from app.domain.game import Game

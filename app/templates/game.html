@@ -72,7 +72,8 @@
         </p>
         <p>
             {% for number in player.all_numbers %}
-            <a class="btn btn-primary emit" href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{ number }}</a>
+            <a class="btn btn-primary emit" href="{{ url_for('game.add_number', code=game.code, number=number) }}">{{
+                number }}</a>
             {% endfor %}
         </p>
         <p class="card-text">
@@ -115,8 +116,39 @@
 
 {% endif %}
 
-<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/reconnecting-websocket.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/application.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/reconnecting-websocket.min.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+
+    if (window.location.protocol == "https:") {
+        var ws_scheme = "wss://";
+    } else {
+        var ws_scheme = "ws://";
+    }
+
+    var inbox = new ReconnectingWebSocket(ws_scheme + location.host + "/receive");
+    var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "/submit");
+
+    inbox.onmessage = function (message) {
+        alert(message.toString())
+        var code = JSON.parse(message.data);
+        alert(code, "{{ game.code }}");
+        if (code == "{{ game.code }}") {
+            location.reload();
+        }
+    };
+
+    const Http = new XMLHttpRequest();
+
+    $("a").on('click', function (event) {
+        event.preventDefault();
+        var url = location.protocol + "//" + location.host + $(this).attr('href');
+        Http.open("GET", url);
+        Http.send();
+        var message = JSON.stringify({event: "change", code: "{{ game.code }}" });
+        outbox.send(message);
+    });
+
+</script>
 
 {% endblock content %}

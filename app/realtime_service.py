@@ -20,12 +20,9 @@ class RealtimeService:
                 yield data
 
     def register(self, client):
-        """Register a WebSocket connection for Redis updates."""
         self.clients.append(client)
 
     def send(self, client, data):
-        """Send given data to the registered client.
-        Automatically discards invalid connections."""
         try:
             client.send(data)
         except Exception:
